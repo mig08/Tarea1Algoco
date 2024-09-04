@@ -1,6 +1,6 @@
-#include <Algoritmos.hpp>
+#include </mnt/c/Users/Martin/Desktop/Universidad/2024-2/Algoco/Tarea1/Algoritmos.hpp>
 
-void SelectionSort(vector<int> &v) { //https://cplusplus.com/forum/beginner/245026/
+void SelectionSort(vector<int> &v) { // https://cplusplus.com/forum/beginner/245026/
     for (size_t i = 0; i < v.size() - 1; i++) {
         size_t min = i;
         for (size_t j = i + 1; j < v.size(); j++)
@@ -12,7 +12,7 @@ void SelectionSort(vector<int> &v) { //https://cplusplus.com/forum/beginner/2450
     }
 }
 
-void merge(vector<int>& vec, int left, int mid, int right) { //https://www.geeksforgeeks.org/cpp-program-for-merge-sort/ 
+void merge(vector<int>& vec, int left, int mid, int right) { // https://www.geeksforgeeks.org/cpp-program-for-merge-sort/ 
     int i, j, k;
     int n1 = mid - left + 1;
     int n2 = right - mid;
@@ -72,7 +72,7 @@ void mergeSort(vector<int>& vec, int left, int right) { // https://www.geeksforg
     }
 }
 
-int partition(vector<int> &vec, int low, int high) {
+int partition(vector<int> &vec, int low, int high) { // https://www.geeksforgeeks.org/cpp-program-for-quicksort/
 
     // Selecting last element as the pivot
     int pivot = vec[high];
@@ -98,7 +98,7 @@ int partition(vector<int> &vec, int low, int high) {
     return (i + 1);
 }
 
-void quickSort(vector<int> &vec, int low, int high) {
+void quickSort(vector<int> &vec, int low, int high) { // https://www.geeksforgeeks.org/cpp-program-for-quicksort/ 
 
     // Base case: This part will be executed till the starting
     // index low is lesser than the ending index high
