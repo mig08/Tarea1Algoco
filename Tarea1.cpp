@@ -9,6 +9,7 @@
 using namespace std::chrono;
 using namespace std;
 
+/*
 void SelectionSort(vector<int> &v) { // https://cplusplus.com/forum/beginner/245026/
     for (size_t i = 0; i < v.size() - 1; i++) {
         size_t min = i;
@@ -18,6 +19,29 @@ void SelectionSort(vector<int> &v) { // https://cplusplus.com/forum/beginner/245
         int t = v[i];
         v[i] = v[min];
         v[min] = t;
+    }
+}
+*/
+
+void selectionSort(vector<int> &v, int n) // https://www.geeksforgeeks.org/selection-sort-algorithm-2/
+{
+    // One by one move boundary of
+    // unsorted subarray
+    for (int i = 0; i < n - 1; i++)
+    {
+        // Find the minimum element in
+        // unsorted array
+        int min_idx = i;
+        for (int j = i + 1; j < n; j++)
+        {
+            if (v[j] < v[min_idx])
+                min_idx = j;
+        }
+
+        // Swap the found minimum element
+        // with the first element
+        if (min_idx != i)
+            swap(v[min_idx], v[i]);
     }
 }
 
@@ -472,7 +496,7 @@ int main(){
 
 
     auto start = high_resolution_clock::now();
-    SelectionSort(randomVector);
+    selectionSort(randomVector, cant);
     cout << endl;
     cout << "selection sort" << endl;
     //printVector(randomVector);
