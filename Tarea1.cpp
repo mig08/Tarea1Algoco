@@ -5,6 +5,8 @@
 #include <ctime>
 #include <vector>
 #include <algorithm>
+#include <chrono>
+using namespace std::chrono;
 using namespace std;
 
 void SelectionSort(vector<int> &v) { // https://cplusplus.com/forum/beginner/245026/
@@ -79,6 +81,7 @@ void mergeSort(vector<int>& vec, int left, int right) { // https://www.geeksforg
     }
 }
 
+/*
 int partition(vector<int> &vec, int low, int high) { // https://www.geeksforgeeks.org/cpp-program-for-quicksort/
 
     // Selecting last element as the pivot
@@ -117,6 +120,47 @@ void quickSort(vector<int> &vec, int low, int high) { // https://www.geeksforgee
 
         // Separately sort elements before and after the
         // Partition Index pi
+        quickSort(vec, low, pi - 1);
+        quickSort(vec, pi + 1, high);
+    }
+}
+*/
+
+int medianOfThree(vector<int>& vec, int low, int high) {
+    int mid = low + (high - low) / 2;
+    
+    // Ordena los tres valores para encontrar la mediana
+    if (vec[low] > vec[mid]) swap(vec[low], vec[mid]);
+    if (vec[low] > vec[high]) swap(vec[low], vec[high]);
+    if (vec[mid] > vec[high]) swap(vec[mid], vec[high]);
+
+    // Ahora vec[mid] es la mediana de los tres
+    return mid;
+}
+
+int partition(vector<int> &vec, int low, int high) {
+    // Selecciona el pivote usando la técnica de la mediana de tres
+    int medianIndex = medianOfThree(vec, low, high);
+    
+    // Coloca el pivote en el final para utilizar el mismo esquema de partición
+    swap(vec[medianIndex], vec[high]);
+    int pivot = vec[high];
+
+    int i = low - 1;
+
+    for (int j = low; j <= high - 1; j++) {
+        if (vec[j] <= pivot) {
+            i++;
+            swap(vec[i], vec[j]);
+        }
+    }
+    swap(vec[i + 1], vec[high]);
+    return i + 1;
+}
+
+void quickSort(vector<int> &vec, int low, int high) {
+    if (low < high) {
+        int pi = partition(vec, low, high);
         quickSort(vec, low, pi - 1);
         quickSort(vec, pi + 1, high);
     }
@@ -293,6 +337,52 @@ vector<vector<int>> multiplicarMatrices_Cubica(const vector<vector<int>>& A, con
     return C;
 }
 
+// Función para transponer una matriz
+vector<vector<int>> transponerMatriz(const vector<vector<int>>& matriz) {
+    int filas = matriz.size();
+    int columnas = matriz[0].size();
+    vector<vector<int>> transpuesta(columnas, vector<int>(filas));
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
+            transpuesta[j][i] = matriz[i][j];
+        }
+    }
+
+    return transpuesta;
+}
+
+// Función para multiplicar matrices usando transposición para mejorar la localidad de los datos
+vector<vector<int>> multiplicarMatrices_Cubica_Optimizada(const vector<vector<int>>& A, const vector<vector<int>>& B) {
+    int filasA = A.size();
+    int columnasA = A[0].size();
+    int filasB = B.size();
+    int columnasB = B[0].size();
+
+    // Verificación de la compatibilidad de las matrices
+    if (columnasA != filasB) {
+        cerr << "Error: Las matrices no se pueden multiplicar (columnas de A != filas de B)." << endl;
+        return {}; // Devuelve una matriz vacía en caso de error
+    }
+
+    // Transponer la matriz B
+    vector<vector<int>> B_T = transponerMatriz(B);
+
+    // Inicializar la matriz resultante con ceros
+    vector<vector<int>> C(filasA, vector<int>(columnasB, 0));
+
+    // Realizar la multiplicación de matrices usando la matriz transpuesta
+    for(int i = 0; i < filasA; ++i) {
+        for(int j = 0; j < columnasB; ++j) {
+            for(int k = 0; k < columnasA; ++k) {
+                C[i][j] += A[i][k] * B_T[j][k];
+            }
+        }
+    }
+
+    return C;
+}
+
 vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vector<vector<int>> matrix_B) { // https://www.geeksforgeeks.org/strassens-matrix-multiplication/
     int col_1 = matrix_A[0].size();
     int row_1 = matrix_A.size();
@@ -300,9 +390,7 @@ vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vecto
     int row_2 = matrix_B.size();
  
     if (col_1 != row_2) {
-        cout << "\nError: The number of columns in Matrix "
-                "A  must be equal to the number of rows in "
-                "Matrix B\n";
+        cout << "\nError: The number of columns in Matrix A must be equal to the number of rows in Matrix B\n";
         return {};
     }
  
@@ -310,20 +398,15 @@ vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vecto
     vector<vector<int> > result_matrix(row_1, result_matrix_row);
  
     if (col_1 == 1)
-        result_matrix[0][0]
-            = matrix_A[0][0] * matrix_B[0][0];
+        result_matrix[0][0] = matrix_A[0][0] * matrix_B[0][0];
     else {
         int split_index = col_1 / 2;
  
         vector<int> row_vector(split_index, 0);
-        vector<vector<int> > result_matrix_00(split_index,
-                                              row_vector);
-        vector<vector<int> > result_matrix_01(split_index,
-                                              row_vector);
-        vector<vector<int> > result_matrix_10(split_index,
-                                              row_vector);
-        vector<vector<int> > result_matrix_11(split_index,
-                                              row_vector);
+        vector<vector<int> > result_matrix_00(split_index, row_vector);
+        vector<vector<int> > result_matrix_01(split_index, row_vector);
+        vector<vector<int> > result_matrix_10(split_index, row_vector);
+        vector<vector<int> > result_matrix_11(split_index, row_vector);
  
         vector<vector<int>> a00(split_index, row_vector);
         vector<vector<int>> a01(split_index, row_vector);
@@ -339,13 +422,11 @@ vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vecto
                 a00[i][j] = matrix_A[i][j];
                 a01[i][j] = matrix_A[i][j + split_index];
                 a10[i][j] = matrix_A[split_index + i][j];
-                a11[i][j] = matrix_A[i + split_index]
-                                    [j + split_index];
+                a11[i][j] = matrix_A[i + split_index][j + split_index];
                 b00[i][j] = matrix_B[i][j];
                 b01[i][j] = matrix_B[i][j + split_index];
                 b10[i][j] = matrix_B[split_index + i][j];
-                b11[i][j] = matrix_B[i + split_index]
-                                    [j + split_index];
+                b11[i][j] = matrix_B[i + split_index][j + split_index];
             }
  
         add_matrix(multiply_matrix_Strassen(a00, b00), multiply_matrix_Strassen(a01, b10), result_matrix_00, split_index);
@@ -378,17 +459,56 @@ vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vecto
 }
 
 int main(){
-    int cant = 100;
+    int cant = 100000;
+    cout << "Cantidad de datos: " << cant << endl; 
     vector<int> randomVector;
     string filename = "Matriz_dataset.txt";
 
-    //RandomDataSet(randomVector, cant);
-    //selectionSort(randomVector);
-    //mergeSort(randomVector, 0, cant-1);
-    //quickSort(randomVector, 0 , cant-1);
-    //sort(randomVector.begin(), randomVector.end());
+    RandomDataSet(randomVector, cant);
+    cout << endl;
+    cout << "random set" << endl;
     //printVector(randomVector);
 
+
+
+    auto start = high_resolution_clock::now();
+    SelectionSort(randomVector);
+    cout << endl;
+    cout << "selection sort" << endl;
+    //printVector(randomVector);
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<milliseconds>(end - start);
+    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
+
+    start = high_resolution_clock::now();
+    mergeSort(randomVector, 0, cant-1);
+    cout << endl;
+    cout << "merge sort" << endl;
+    //printVector(randomVector);
+    end = high_resolution_clock::now();
+    duration = duration_cast<milliseconds>(end - start);
+    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
+
+    start = high_resolution_clock::now();
+    quickSort(randomVector, 0 , cant-1);
+    cout << endl;
+    cout << "quick sort" << endl;
+    //printVector(randomVector);
+    end = high_resolution_clock::now();
+    duration = duration_cast<milliseconds>(end - start);
+    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
+
+
+    start = high_resolution_clock::now();
+    sort(randomVector.begin(), randomVector.end());
+    cout << endl;
+    cout << "sort" << endl;
+    //printVector(randomVector);
+    end = high_resolution_clock::now();
+    duration = duration_cast<milliseconds>(end - start);
+    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
+
+/*
     vector<vector<int>> matriz_A;
     vector<vector<int>> matriz_B;
     vector<vector<int>> matriz_C;
@@ -403,11 +523,14 @@ int main(){
     imprimirMatriz(matriz_D);   
     cout << endl;
     vector<vector<int>> matriz_resultante = multiplicarMatrices_Cubica(matriz_A, matriz_B);
+    vector<vector<int>> matriz_resultante_opti = multiplicarMatrices_Cubica_Optimizada(matriz_A, matriz_B);
     vector<vector<int>> matriz_Resultante_strassen = multiply_matrix_Strassen(matriz_C, matriz_D);
     imprimirMatriz(matriz_resultante);
     cout << endl;
+    imprimirMatriz(matriz_resultante_opti);
+    cout << endl;
     imprimirMatriz(matriz_Resultante_strassen);
-
+*/
 
     return 0;
 }
