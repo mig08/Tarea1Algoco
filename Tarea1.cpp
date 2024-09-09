@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
+#include <iomanip> 
+#include <cmath>
 using namespace std::chrono;
 using namespace std;
 
@@ -22,6 +24,8 @@ void SelectionSort(vector<int> &v) { // https://cplusplus.com/forum/beginner/245
     }
 }
 */
+
+
 
 void selectionSort(vector<int> &v, int n) // https://www.geeksforgeeks.org/selection-sort-algorithm-2/
 {
@@ -208,7 +212,7 @@ void RandomDataSet(vector<int>& vector, int numElements) {
 
     // Generar números aleatorios dentro del rango y escribirlos en el archivo
     for (int i = 0; i < numElements; ++i) {
-        int randomNumber = rand();
+        int randomNumber = rand() % 10000 + 1;
         vector.push_back(randomNumber);
         outfile << randomNumber << endl; // Escribe el número en el archivo
     }
@@ -228,6 +232,7 @@ void printVector(const vector<int>& dataset) {
     }
 }
 
+
 // Función para generar una matriz con dimensiones aleatorias
 vector<vector<int>> generarMatriz(int filas, int columnas) {
     vector<vector<int>> matriz(filas, vector<int>(columnas));
@@ -241,21 +246,28 @@ vector<vector<int>> generarMatriz(int filas, int columnas) {
     return matriz;
 }
 
+
+int generarPotenciaDe2(int maxExponent) {
+    int exponente = rand() % maxExponent;  // Genera un exponente entre 0 y maxExponent - 1
+    return pow(2, exponente);  // Retorna 2 elevado al exponente
+}
+
 // Función principal para generar matrices, verificar multiplicabilidad y escribir en un archivo
 void generarYVerificarMatrices(vector<vector<int>>& matriz_A, vector<vector<int>>& matriz_B, vector<vector<int>>& matriz_C, vector<vector<int>>& matriz_D, const string& filename) {
     srand(time(0)); // Inicializar la semilla para rand()
 
-    int filasA, columnasA, filasB, columnasB, filasColumnasC;
-    filasColumnasC = rand() % 10 + 1;
-    matriz_C = generarMatriz(filasColumnasC, filasColumnasC);
-    matriz_D = generarMatriz(filasColumnasC, filasColumnasC);
+    int filasA, columnasA, filasB, columnasB, filasColumnasC, filasColumnasC_final;
+    //filasColumnasC = 
+    filasColumnasC_final = pow(2, 9);
+    matriz_C = generarMatriz(filasColumnasC_final, filasColumnasC_final);
+    matriz_D = generarMatriz(filasColumnasC_final, filasColumnasC_final);
 
     do {
         // Generar dimensiones aleatorias para las matrices
-        filasA = rand() % 10 + 1;      // Dimensiones entre 1 y 10 (puedes ajustar estos valores)
-        columnasA = rand() % 10 + 1;
+        filasA = rand() % 500 + 1;      // Dimensiones entre 1 y 10 (puedes ajustar estos valores)
+        columnasA = rand() % 500 + 1;
         filasB = columnasA;            // Asegura que filasB sea igual a columnasA para garantizar multiplicabilidad
-        columnasB = rand() % 10 + 1;
+        columnasB = rand() % 500 + 1;
 
         // Generar las matrices
         matriz_A = generarMatriz(filasA, columnasA);
@@ -293,7 +305,7 @@ void generarYVerificarMatrices(vector<vector<int>>& matriz_A, vector<vector<int>
 
     outfile << endl;
 
-    outfile << "Matriz C (" << filasColumnasC << "x" << filasColumnasC << "):\n";
+    outfile << "Matriz C (" << filasColumnasC_final << "x" << filasColumnasC_final << "):\n";
     for (const auto& fila : matriz_C) {
         for (int val : fila) {
             outfile << val << " ";
@@ -303,7 +315,7 @@ void generarYVerificarMatrices(vector<vector<int>>& matriz_A, vector<vector<int>
 
     outfile << endl;
 
-    outfile << "Matriz D (" << filasColumnasC << "x" << filasColumnasC << "):\n";
+    outfile << "Matriz D (" << filasColumnasC_final << "x" << filasColumnasC_final << "):\n";
     for (const auto& fila : matriz_D) {
         for (int val : fila) {
             outfile << val << " ";
@@ -483,7 +495,7 @@ vector<vector<int>> multiply_matrix_Strassen(vector<vector<int>> matrix_A, vecto
 }
 
 int main(){
-    int cant = 100000;
+    int cant = 900000;
     cout << "Cantidad de datos: " << cant << endl; 
     vector<int> randomVector;
     string filename = "Matriz_dataset.txt";
@@ -493,25 +505,15 @@ int main(){
     cout << "random set" << endl;
     //printVector(randomVector);
 
-
-
+/*
     auto start = high_resolution_clock::now();
-    selectionSort(randomVector, cant);
-    cout << endl;
-    cout << "selection sort" << endl;
-    //printVector(randomVector);
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(end - start);
-    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
-
-    start = high_resolution_clock::now();
     mergeSort(randomVector, 0, cant-1);
     cout << endl;
     cout << "merge sort" << endl;
     //printVector(randomVector);
-    end = high_resolution_clock::now();
-    duration = duration_cast<milliseconds>(end - start);
-    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
 
     start = high_resolution_clock::now();
     quickSort(randomVector, 0 , cant-1);
@@ -519,19 +521,27 @@ int main(){
     cout << "quick sort" << endl;
     //printVector(randomVector);
     end = high_resolution_clock::now();
-    duration = duration_cast<milliseconds>(end - start);
-    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
-
-
+    duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+*/
+    auto start = high_resolution_clock::now();
+    selectionSort(randomVector, cant);
+    cout << endl;
+    cout << "selection sort" << endl;
+    //printVector(randomVector);
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+/*
     start = high_resolution_clock::now();
     sort(randomVector.begin(), randomVector.end());
     cout << endl;
     cout << "sort" << endl;
     //printVector(randomVector);
     end = high_resolution_clock::now();
-    duration = duration_cast<milliseconds>(end - start);
-    cout << "Tiempo de ejecución: " << duration.count() << " ms" << endl;
-
+    duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+*/
 /*
     vector<vector<int>> matriz_A;
     vector<vector<int>> matriz_B;
@@ -546,15 +556,40 @@ int main(){
     cout << endl;
     imprimirMatriz(matriz_D);   
     cout << endl;
+    
+    auto start = high_resolution_clock::now();
     vector<vector<int>> matriz_resultante = multiplicarMatrices_Cubica(matriz_A, matriz_B);
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución Cubica: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+    start = high_resolution_clock::now();
     vector<vector<int>> matriz_resultante_opti = multiplicarMatrices_Cubica_Optimizada(matriz_A, matriz_B);
+    end = high_resolution_clock::now();
+    duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución Transpuesta: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+
+    auto start = high_resolution_clock::now();
     vector<vector<int>> matriz_Resultante_strassen = multiply_matrix_Strassen(matriz_C, matriz_D);
-    imprimirMatriz(matriz_resultante);
-    cout << endl;
-    imprimirMatriz(matriz_resultante_opti);
-    cout << endl;
-    imprimirMatriz(matriz_Resultante_strassen);
-*/
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución Strassen: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;        
+    start = high_resolution_clock::now();
+    vector<vector<int>> matriz_resultante_cuadrada = multiplicarMatrices_Cubica(matriz_C, matriz_D);
+    end = high_resolution_clock::now();
+    duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución cuadrada cubica: " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+    start = high_resolution_clock::now();
+    vector<vector<int>> matriz_resultante_opti_cuadrada = multiplicarMatrices_Cubica_Optimizada(matriz_C, matriz_D);
+    end = high_resolution_clock::now();
+    duration = duration_cast<microseconds>(end - start); // Usar microsegundos para mayor precisión
+    cout << "Tiempo de ejecución cuadrada Transpuesta : " << fixed << setprecision(6) << duration.count() / 1e6 << " s" << endl;
+    */
+    //imprimirMatriz(matriz_resultante);
+    //cout << endl;
+    //imprimirMatriz(matriz_resultante_opti);
+    //cout << endl;
+    //imprimirMatriz(matriz_Resultante_strassen);
+
 
     return 0;
 }
